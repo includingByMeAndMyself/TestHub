@@ -1,5 +1,6 @@
 ﻿using Application.Data.DataBaseContext;
-using Domain.Models;
+using Application.Dtos;
+using Application.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -10,7 +11,7 @@ public class TopicService(
     ILogger<TopicService> logger)
     : ITopicService
 {
-    public async Task<List<Topic>> GetTopicsAsync(CancellationToken ct)
+    public async Task<List<TopicResponseDto>> GetTopicsAsync(CancellationToken ct)
     {
         try
         {
@@ -20,7 +21,7 @@ public class TopicService(
                 .AsNoTracking()
                 .ToListAsync(ct);
 
-            return topic;
+            return topic.ToTopicResponseDtoList();
         }
         catch(Exception exception)
         {
@@ -28,17 +29,17 @@ public class TopicService(
         }
     }
 
-    public Task<Topic> GetTopicAsync(Guid id, CancellationToken ct)
+    public Task<TopicResponseDto> GetTopicAsync(Guid id, CancellationToken ct)
     {
         throw new NotImplementedException();
     }
 
-    public Task<Topic> CreateTopicAsync(Topic topicRequestDto, CancellationToken ct)
+    public Task<TopicResponseDto> CreateTopicAsync(CreateTopicRequestDto topicRequestDto, CancellationToken ct)
     {
         throw new NotImplementedException();
     }
 
-    public Task<Topic> UpdateTopicAsync(Guid id, Topic topicRequestDto, CancellationToken ct)
+    public Task<TopicResponseDto> UpdateTopicAsync(Guid id, UpdateTopicRequestDto topicRequestDto, CancellationToken ct)
     {
         throw new NotImplementedException();
     }

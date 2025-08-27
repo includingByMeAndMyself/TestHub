@@ -10,31 +10,40 @@ public class TopicService(
     ILogger<TopicService> logger)
     : ITopicService
 {
-    public async Task<List<Topic>> GetTopicsAsync()
+    public async Task<List<Topic>> GetTopicsAsync(CancellationToken ct)
     {
-        var topic = await dbContext.Topics
-            .AsNoTracking()
-            .ToListAsync();
+        try
+        {
+            ct.ThrowIfCancellationRequested();
+            
+            var topic = await dbContext.Topics
+                .AsNoTracking()
+                .ToListAsync(ct);
 
-        return topic;
+            return topic;
+        }
+        catch(Exception exception)
+        {
+            throw;
+        }
     }
 
-    public Task<Topic> GetTopicAsync(Guid id)
+    public Task<Topic> GetTopicAsync(Guid id, CancellationToken ct)
     {
         throw new NotImplementedException();
     }
 
-    public Task<Topic> CreateTopicAsync(Topic topicRequestDto)
+    public Task<Topic> CreateTopicAsync(Topic topicRequestDto, CancellationToken ct)
     {
         throw new NotImplementedException();
     }
 
-    public Task<Topic> UpdateTopicAsync(Guid id, Topic topicRequestDto)
+    public Task<Topic> UpdateTopicAsync(Guid id, Topic topicRequestDto, CancellationToken ct)
     {
         throw new NotImplementedException();
     }
 
-    public Task DeleteTopicAsync(Guid id)
+    public Task DeleteTopicAsync(Guid id, CancellationToken ct)
     {
         throw new NotImplementedException();
     }

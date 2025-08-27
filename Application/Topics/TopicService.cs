@@ -1,6 +1,8 @@
 ﻿using Application.Data.DataBaseContext;
 using Application.Dtos;
+using Application.Exceptions;
 using Application.Extensions;
+using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -29,9 +31,19 @@ public class TopicService(
         }
     }
 
-    public Task<TopicResponseDto> GetTopicAsync(Guid id, CancellationToken ct)
+    public async Task<TopicResponseDto> GetTopicAsync(Guid id, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var topicId = TopicId.Of(id);
+        var result = await dbContext
+            .Topics
+            .FindAsync([topicId], ct);
+
+        if (result is null)
+        {
+            throw new TopicNotFoundException($"По {id} не найден topic");
+        }
+
+        return result.ToTopicResponseDto();
     }
 
     public Task<TopicResponseDto> CreateTopicAsync(CreateTopicRequestDto topicRequestDto, CancellationToken ct)

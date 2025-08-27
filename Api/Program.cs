@@ -1,4 +1,5 @@
 using Api;
+using Application;
 using Infrastructure;
 using Infrastructure.Data.Extensions;
 
@@ -8,7 +9,8 @@ var configuration = builder.Configuration;
 
 builder.Services
     .AddApiServices(configuration)
-    .AddInfrastructureServices(configuration);
+    .AddInfrastructureServices(configuration)
+    .AddApplicationServices();
 
 var app = builder.Build();
 

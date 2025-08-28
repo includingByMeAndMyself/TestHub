@@ -16,20 +16,13 @@ public class TopicService(
 {
     public async Task<List<TopicResponseDto>> GetTopicsAsync(CancellationToken ct)
     {
-        try
-        {
-            ct.ThrowIfCancellationRequested();
+        ct.ThrowIfCancellationRequested();
 
-            var topic = await dbContext.Topics
-                .AsNoTracking()
-                .ToListAsync(ct);
+        var topic = await dbContext.Topics
+            .AsNoTracking()
+            .ToListAsync(ct);
 
-            return topic.ToTopicResponseDtoList();
-        }
-        catch (Exception exception)
-        {
-            throw;
-        }
+        return topic.ToTopicResponseDtoList();
     }
 
     public async Task<TopicResponseDto> GetTopicAsync(Guid id, CancellationToken ct)
@@ -88,8 +81,18 @@ public class TopicService(
         return topic.ToTopicResponseDto();
     }
 
-    public Task DeleteTopicAsync(Guid id, CancellationToken ct)
+    public async Task DeleteTopicAsync(Guid id, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var topicId = TopicId.Of(id);
+        
+        var topic = await dbContext.Topics.FindAsync([topicId], ct);
+        
+        if (topic is null)
+        {
+            throw new TopicNotFoundException($"По {id} не найден topic");
+        }
+
+        dbContext.Topics.Remove(topic);
+        await dbContext.SaveChangesAsync(ct);
     }
 }

@@ -12,7 +12,7 @@ public class CustomExceptionHandler(
         Exception exception,
         CancellationToken cancellationToken)
     {
-        logger.LogError(
+        logger.LogWarning(
             "Обработанное исключение: {message}, время: {time}",
             exception.Message, DateTime.Now);
 

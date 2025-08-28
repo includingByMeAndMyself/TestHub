@@ -7,6 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 var configuration = builder.Configuration;
 
+builder.Logging.AddConfiguration(
+    configuration.GetSection("Logging")
+);
+builder.Logging.AddConsole();
+
 builder.Services
     .AddApiServices(configuration)
     .AddInfrastructureServices(configuration)

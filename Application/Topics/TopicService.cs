@@ -2,6 +2,7 @@
 using Application.Dtos;
 using Application.Exceptions;
 using Application.Extensions;
+using Domain.Models;
 using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,14 +19,14 @@ public class TopicService(
         try
         {
             ct.ThrowIfCancellationRequested();
-            
+
             var topic = await dbContext.Topics
                 .AsNoTracking()
                 .ToListAsync(ct);
 
             return topic.ToTopicResponseDtoList();
         }
-        catch(Exception exception)
+        catch (Exception exception)
         {
             throw;
         }
@@ -46,9 +47,21 @@ public class TopicService(
         return result.ToTopicResponseDto();
     }
 
-    public Task<TopicResponseDto> CreateTopicAsync(CreateTopicRequestDto topicRequestDto, CancellationToken ct)
+    public async Task<TopicResponseDto> CreateTopicAsync(CreateTopicRequestDto dto, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var newTopic = Topic.Create(
+            TopicId.Of(Guid.NewGuid()),
+            dto.Title,
+            dto.EventStart,
+            dto.Summary,
+            dto.TopicType,
+            Location.Of(dto.Location.City, dto.Location.Street)
+        );
+
+        await dbContext.Topics.AddAsync(newTopic, ct);
+        await dbContext.SaveChangeAsync(ct);
+        
+        return newTopic.ToTopicResponseDto();
     }
 
     public Task<TopicResponseDto> UpdateTopicAsync(Guid id, UpdateTopicRequestDto topicRequestDto, CancellationToken ct)

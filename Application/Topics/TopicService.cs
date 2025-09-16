@@ -20,6 +20,7 @@ public class TopicService(
 
         var topic = await dbContext.Topics
             .AsNoTracking()
+            .Where(t => t.IsDeleted == false)
             .ToListAsync(ct);
 
         return topic.ToTopicResponseDtoList();
@@ -32,7 +33,7 @@ public class TopicService(
             .Topics
             .FindAsync([topicId], ct);
 
-        if (result is null)
+        if (result is null || result.IsDeleted)
         {
             throw new TopicNotFoundException($"По {id} не найден topic");
         }
@@ -63,7 +64,7 @@ public class TopicService(
 
         var topic = await dbContext.Topics.FindAsync([topicId], ct);
 
-        if (topic is null)
+        if (topic is null || topic.IsDeleted)
         {
             throw new TopicNotFoundException($"По {id} не найден topic");
         }
@@ -87,12 +88,15 @@ public class TopicService(
         
         var topic = await dbContext.Topics.FindAsync([topicId], ct);
         
-        if (topic is null)
+        if (topic is null || topic.IsDeleted)
         {
             throw new TopicNotFoundException($"По {id} не найден topic");
         }
 
-        dbContext.Topics.Remove(topic);
+        topic.IsDeleted = true;
+        topic.DeletedAt = DateTimeOffset.UtcNow;
+        
+        //dbContext.Topics.Remove(topic);
         await dbContext.SaveChangesAsync(ct);
     }
 }

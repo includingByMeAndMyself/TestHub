@@ -3,6 +3,7 @@ using Domain.Models;
 
 namespace Application.Topics;
 
+[Obsolete]
 public interface ITopicService
 {
     Task<List<TopicResponseDto>> GetTopicsAsync(CancellationToken ct);

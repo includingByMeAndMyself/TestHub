@@ -12,12 +12,24 @@ public static class DependencyInjection
         services.AddControllers();
         services.AddOpenApi();
 
-        return services;
+        services.AddCors(options =>
+        {
+            options.AddPolicy("react-policy", policy =>
+            {
+                policy.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .WithOrigins("http://localhost:5001");
+            });
+        });
+
+    return services;
     }
 
     public static WebApplication UseApiServices(
         this WebApplication app)
     {
+        app.UseCors("react-policy");
+        
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
